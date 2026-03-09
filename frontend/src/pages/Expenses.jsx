@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getExpenses, addExpense } from '../api';
 import { Plus, Download } from 'lucide-react';
 
-const Expenses = () => {
+const Expenses = ({ isAdmin }) => {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [month, setMonth] = useState('');
@@ -84,44 +84,46 @@ const Expenses = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3" style={{ gridTemplateColumns: 'minmax(300px, 1fr) 2fr' }}>
+            <div className="grid grid-cols-3" style={{ gridTemplateColumns: isAdmin ? 'minmax(300px, 1fr) 2fr' : '1fr' }}>
                 {/* Add Expense Form */}
-                <div className="glass card" style={{ height: 'fit-content' }}>
-                    <h3 style={{ margin: '0 0 1.5rem 0' }}>Add New Expense</h3>
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label>Category</label>
-                            <select className="form-control" value={category} onChange={e => setCategory(e.target.value)}>
-                                <option value="Lift Maintenance">Lift Maintenance</option>
-                                <option value="Swipper Cost">Swipper Cost</option>
-                                <option value="Electricity">Electricity</option>
-                                <option value="Water">Water</option>
-                                <option value="Repairs">Repairs</option>
-                                <option value="Others">Others</option>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label>Amount (₹)</label>
-                            <input type="number" required className="form-control" value={amount} onChange={e => setAmount(e.target.value)} />
-                        </div>
-                        <div className="form-group">
-                            <label>Month</label>
-                            <input type="month" required className="form-control" value={expenseMonth} onChange={e => setExpenseMonth(e.target.value)} />
-                        </div>
-                        <div className="form-group">
-                            <label>Description (Optional)</label>
-                            <textarea className="form-control" rows="2" value={description} onChange={e => setDescription(e.target.value)}></textarea>
-                        </div>
-                        <div className="form-group">
-                            <label>Upload Bill</label>
-                            <input type="file" className="form-control" ref={fileInputRef} onChange={e => setBillFile(e.target.files[0])} accept="image/*,.pdf" />
-                        </div>
+                {isAdmin && (
+                    <div className="glass card" style={{ height: 'fit-content' }}>
+                        <h3 style={{ margin: '0 0 1.5rem 0' }}>Add New Expense</h3>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Category</label>
+                                <select className="form-control" value={category} onChange={e => setCategory(e.target.value)}>
+                                    <option value="Lift Maintenance">Lift Maintenance</option>
+                                    <option value="Swipper Cost">Swipper Cost</option>
+                                    <option value="Electricity">Electricity</option>
+                                    <option value="Water">Water</option>
+                                    <option value="Repairs">Repairs</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Amount (₹)</label>
+                                <input type="number" required className="form-control" value={amount} onChange={e => setAmount(e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label>Month</label>
+                                <input type="month" required className="form-control" value={expenseMonth} onChange={e => setExpenseMonth(e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label>Description (Optional)</label>
+                                <textarea className="form-control" rows="2" value={description} onChange={e => setDescription(e.target.value)}></textarea>
+                            </div>
+                            <div className="form-group">
+                                <label>Upload Bill</label>
+                                <input type="file" className="form-control" ref={fileInputRef} onChange={e => setBillFile(e.target.files[0])} accept="image/*,.pdf" />
+                            </div>
 
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
-                            <Plus size={20} /> Add Expense
-                        </button>
-                    </form>
-                </div>
+                            <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
+                                <Plus size={20} /> Add Expense
+                            </button>
+                        </form>
+                    </div>
+                )}
 
                 {/* Expenses List */}
                 <div className="glass card">

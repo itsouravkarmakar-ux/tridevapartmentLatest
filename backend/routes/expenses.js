@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import Expense from '../models/Expense.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -30,8 +31,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Add logic to save expense and handle file upload
-router.post('/', upload.single('billImage'), async (req, res) => {
+// Create a new expense (Admin Only)
+router.post('/', authMiddleware, upload.single('billImage'), async (req, res) => {
     const { category, amount, month, description } = req.body;
 
     if (!category || !amount || !month) {

@@ -1,5 +1,6 @@
 import express from 'express';
 import Settings from '../models/Settings.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -19,8 +20,8 @@ router.get('/:key', async (req, res) => {
     }
 });
 
-// Update or create a setting
-router.put('/:key', async (req, res) => {
+// Update or create a setting (Admin Only)
+router.put('/:key', authMiddleware, async (req, res) => {
     try {
         const { value } = req.body;
         const setting = await Settings.findOneAndUpdate(

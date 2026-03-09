@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getDashboardSummary, updateSettings } from '../api';
 import { ArrowUpRight, ArrowDownRight, Wallet, Edit2 } from 'lucide-react';
 
-const Dashboard = () => {
+const Dashboard = ({ isAdmin }) => {
     const [summary, setSummary] = useState({
         initialBalance: 50557,
         totalReceived: 0,
@@ -67,11 +67,13 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="btn" style={{ background: 'var(--border)' }} onClick={handleEditBalance}>
-                    <Edit2 size={16} /> Edit Initial Start Balance (Currently ₹{summary.initialBalance})
-                </button>
-            </div>
+            {isAdmin && (
+                <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button className="btn" style={{ background: 'var(--border)' }} onClick={handleEditBalance}>
+                        <Edit2 size={16} /> Edit Initial Start Balance (Currently ₹{summary.initialBalance})
+                    </button>
+                </div>
+            )}
 
             {loading ? (
                 <p>Loading summary...</p>

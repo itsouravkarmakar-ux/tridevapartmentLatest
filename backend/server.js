@@ -10,6 +10,7 @@ import paymentRoutes from './routes/payments.js';
 import expenseRoutes from './routes/expenses.js';
 import dashboardRoutes from './routes/dashboard.js';
 import settingsRoutes from './routes/settings.js';
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('Tridev Apartment Maintenance API is running.');

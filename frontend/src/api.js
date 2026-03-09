@@ -2,6 +2,22 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api';
 
+// Intercept requests and add authorization header
+axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
+export const login = async (password) => {
+    const res = await axios.post(`${API_URL}/auth/login`, { password });
+    return res.data;
+};
+
 export const getDashboardSummary = async (month) => {
     const res = await axios.get(`${API_URL}/dashboard`, { params: { month } });
     return res.data;

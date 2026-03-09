@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getOwners, addPayment, setOwnerPremium, seedOwners, getSettings, updateSettings, updateOwner } from '../api';
 import { ShieldAlert, CheckCircle2, Settings } from 'lucide-react';
 
-const Owners = () => {
+const Owners = ({ isAdmin }) => {
     const [owners, setOwners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [globalPremium, setGlobalPremium] = useState(600); // Default to reflect backend
@@ -113,9 +113,17 @@ const Owners = () => {
             </div>
 
             <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="btn" style={{ background: 'var(--border)' }} onClick={handleSetGlobalPremium}>
-                    <Settings size={16} /> Global Standard Premium: ₹{globalPremium}/mo
-                </button>
+                {isAdmin && (
+                    <button className="btn" style={{ background: 'var(--border)' }} onClick={handleSetGlobalPremium}>
+                        <Settings size={16} /> Global Standard Premium: ₹{globalPremium}/mo
+                    </button>
+                )}
+                {!isAdmin && (
+                    <span style={{ padding: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                        <Settings size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+                        Global Premium: ₹{globalPremium}/mo
+                    </span>
+                )}
             </div>
 
             {loading ? (
@@ -136,7 +144,7 @@ const Owners = () => {
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
                                             <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Flat {owner.flatNumber}: {owner.ownerName}</h3>
-                                            <button className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.4)' }} onClick={() => handleEditOwner(owner._id, owner.ownerName, owner.phone)}>Edit Details</button>
+                                            {isAdmin && <button className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.4)' }} onClick={() => handleEditOwner(owner._id, owner.ownerName, owner.phone)}>Edit Details</button>}
                                         </div>
                                         {owner.phone && <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>📞 {owner.phone}</div>}
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -154,12 +162,12 @@ const Owners = () => {
                                         Expected: <strong>₹{owner.expectedPremium || 0}</strong>
                                         {!owner.isExplicitPremium && <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>(Default)</span>}
                                     </span>
-                                    <button className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleSetPremium(owner._id)}>Override</button>
+                                    {isAdmin && <button className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleSetPremium(owner._id)}>Override</button>}
                                 </div>
 
                                 <div style={{ background: 'rgba(255,255,255,0.5)', padding: '0.75rem', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontSize: '0.875rem' }}>Paid this month: <strong>₹{owner.paidAmount || 0}</strong></span>
-                                    <button className="btn btn-primary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleAddPayment(owner._id)}>Pay</button>
+                                    {isAdmin && <button className="btn btn-primary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleAddPayment(owner._id)}>Pay</button>}
                                 </div>
 
                                 {owner.currentDueForMonth > 0 && (

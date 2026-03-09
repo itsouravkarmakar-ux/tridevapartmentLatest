@@ -1,18 +1,26 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Home, Users, Receipt, AlertCircle } from 'lucide-react';
+import { Home, Users, Receipt, AlertCircle, LogIn, LogOut, KeyRound } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import Owners from './pages/Owners';
 import Expenses from './pages/Expenses';
 import Defaulters from './pages/Defaulters';
+import Login from './components/Login';
+import ChangePassword from './components/ChangePassword';
 
-const Sidebar = () => {
+const Sidebar = ({ isAdmin, showLogin, handleLogout, showChangePassword }) => {
   const location = useLocation();
-  const isActive = (path) => location.pathname === path ? 'active' : '';
+
+  const isActive = (path) => {
+    return location.pathname === path ? 'active' : '';
+  };
 
   return (
-    <div className="sidebar glass" style={{ borderRadius: 0, borderTop: 0, borderBottom: 0, borderLeft: 0 }}>
-      <h1>Tridev<br />Apartment</h1>
-      <div className="nav-links">
+    <div className="sidebar">
+      <h1 style={{ color: 'var(--text-primary)', marginBottom: '2rem', fontSize: '1.5rem', fontWeight: 800 }}>
+        Tridev Apartment
+      </h1>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <Link to="/" className={`nav-link ${isActive('/')}`}>
           <Home size={20} /> Dashboard
         </Link>
@@ -23,24 +31,59 @@ const Sidebar = () => {
           <Receipt size={20} /> Expenses
         </Link>
         <Link to="/defaulters" className={`nav-link ${isActive('/defaulters')}`}>
-          <AlertCircle size={20} /> Defaulters
+          <AlertCircle size={20} /> Defaulters List
         </Link>
+      </div>
+
+      <div style={{ marginTop: 'auto', paddingTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        {isAdmin ? (
+          <>
+            <button className="nav-link" onClick={showChangePassword} style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', color: 'var(--text-secondary)' }}>
+              <KeyRound size={20} /> Change Password
+            </button>
+            <button className="nav-link" onClick={handleLogout} style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', color: 'var(--danger)' }}>
+              <LogOut size={20} /> Logout Admin
+            </button>
+          </>
+        ) : (
+          <button className="nav-link" onClick={showLogin} style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}>
+            <LogIn size={20} /> Admin Login
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
-function App() {
+const App = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showPwdUi, setShowPwdUi] = useState(false);
+
+  useEffect(() => {
+    // Check if logged in on load
+    const token = localStorage.getItem('token');
+    if (token) setIsAdmin(true);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAdmin(false);
+  };
+
   return (
     <BrowserRouter>
-      <div className="app-container">
-        <Sidebar />
-        <main className="main-content">
+      {showLogin && <Login onLoginSuccess={() => { setIsAdmin(true); setShowLogin(false); }} onClose={() => setShowLogin(false)} />}
+      {showPwdUi && <ChangePassword onClose={() => setShowPwdUi(false)} />}
+
+      <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-gradient)' }}>
+        <Sidebar isAdmin={isAdmin} showLogin={() => setShowLogin(true)} handleLogout={handleLogout} showChangePassword={() => setShowPwdUi(true)} />
+        <main style={{ padding: '2rem', flex: 1, marginLeft: '250px' }}>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/owners" element={<Owners />} />
-            <Route path="/expenses" element={<Expenses />} />
-            <Route path="/defaulters" element={<Defaulters />} />
+            <Route path="/" element={<Dashboard isAdmin={isAdmin} />} />
+            <Route path="/owners" element={<Owners isAdmin={isAdmin} />} />
+            <Route path="/expenses" element={<Expenses isAdmin={isAdmin} />} />
+            <Route path="/defaulters" element={<Defaulters isAdmin={isAdmin} />} />
           </Routes>
         </main>
       </div>

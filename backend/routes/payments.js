@@ -1,6 +1,7 @@
 import express from 'express';
 import Payment from '../models/Payment.js';
 import Owner from '../models/Owner.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -18,9 +19,9 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Add a payment
-router.post('/', async (req, res) => {
-    const { owner, amount, month, paymentMethod, notes } = req.body;
+// Add a new payment (Admin Only)
+router.post('/', authMiddleware, async (req, res) => {
+    const { owner, amount, paymentMethod, transactionDate, month, notes } = req.body;
 
     if (!owner || !amount || !month) {
         return res.status(400).json({ message: 'Missing required fields' });

@@ -3,6 +3,7 @@ import Owner from '../models/Owner.js';
 import Premium from '../models/Premium.js';
 import Payment from '../models/Payment.js';
 import Settings from '../models/Settings.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -53,8 +54,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Set premium for an owner for a specific month
-router.post('/premium', async (req, res) => {
+// Set premium for an owner for a specific month (Admin Only)
+router.post('/premium', authMiddleware, async (req, res) => {
     const { owner, month, expectedAmount } = req.body;
     if (!owner || !month || expectedAmount === undefined) {
         return res.status(400).json({ message: 'Missing fields' });
@@ -72,8 +73,8 @@ router.post('/premium', async (req, res) => {
     }
 });
 
-// Update an owner (e.g., name or due)
-router.put('/:id', async (req, res) => {
+// Update an owner (e.g., name or due) (Admin Only)
+router.put('/:id', authMiddleware, async (req, res) => {
     try {
         const updatedOwner = await Owner.findByIdAndUpdate(
             req.params.id,
@@ -86,8 +87,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Seed data manually if owners don't exist
-router.post('/seed', async (req, res) => {
+// Seed data manually if owners don't exist (Admin Only)
+router.post('/seed', authMiddleware, async (req, res) => {
     try {
         const flats = ['GA', 'GB', '1A', '1B', '2A', '2B', '3A', '3B'];
         const count = await Owner.countDocuments();
