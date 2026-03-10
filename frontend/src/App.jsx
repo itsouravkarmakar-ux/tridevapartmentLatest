@@ -82,14 +82,27 @@ const App = () => {
 
       <div className="app-container">
         <Sidebar isAdmin={isAdmin} showLogin={() => setShowLogin(true)} handleLogout={handleLogout} showChangePassword={() => setShowPwdUi(true)} />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Dashboard isAdmin={isAdmin} />} />
-            <Route path="/owners" element={<Owners isAdmin={isAdmin} />} />
-            <Route path="/expenses" element={<Expenses isAdmin={isAdmin} />} />
-            <Route path="/defaulters" element={<Defaulters isAdmin={isAdmin} />} />
-            <Route path="/actions" element={<ActionItems isAdmin={isAdmin} />} />
-          </Routes>
+        <main className="main-content" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1 }}>
+            <Routes>
+              <Route path="/" element={<Dashboard isAdmin={isAdmin} />} />
+              <Route path="/owners" element={<Owners isAdmin={isAdmin} />} />
+              <Route path="/expenses" element={<Expenses isAdmin={isAdmin} />} />
+              <Route path="/defaulters" element={<Defaulters isAdmin={isAdmin} />} />
+              <Route path="/actions" element={<ActionItems isAdmin={isAdmin} />} />
+            </Routes>
+          </div>
+          <footer style={{
+            textAlign: 'center',
+            padding: '1.5rem 0 0 0',
+            color: 'var(--text-primary)',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            marginTop: 'auto',
+            textShadow: '0 1px 2px rgba(255,255,255,0.8)'
+          }}>
+            developed by sourav karmakar
+          </footer>
         </main>
       </div>
     </BrowserRouter>

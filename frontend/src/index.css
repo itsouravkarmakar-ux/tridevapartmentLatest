@@ -75,12 +75,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(255, 255, 255, 0.8);
   z-index: 10;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.05);
 }
 
 .sidebar h1 {
@@ -88,6 +88,7 @@ body {
   font-weight: 800;
   margin: 0 0 1.5rem 0;
   background: linear-gradient(to right, #4f46e5, #ec4899);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.025em;
@@ -104,12 +105,13 @@ body {
   align-items: center;
   gap: 1rem;
   padding: 0.875rem 1.25rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   text-decoration: none;
   border-radius: 12px;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .nav-link:hover,
@@ -131,9 +133,10 @@ body {
 h2 {
   font-size: 2.5rem;
   font-weight: 800;
-  margin: 0 0 2rem 0;
+  margin: 0 0 1rem 0;
   color: var(--text-primary);
   letter-spacing: -0.025em;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .card {
@@ -198,7 +201,8 @@ h2 {
   margin-bottom: 0.5rem;
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 .form-control {
@@ -227,6 +231,18 @@ h2 {
   align-items: center;
   margin-bottom: 2rem;
   gap: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.page-header p {
+  color: var(--text-primary) !important;
+  font-weight: 500;
 }
 
 .page-header-actions {
@@ -234,10 +250,6 @@ h2 {
   gap: 1rem;
   align-items: center;
   flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.5);
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
 }
 
 /* Spinner Loader */
