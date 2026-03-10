@@ -114,13 +114,13 @@ const Owners = ({ isAdmin }) => {
 
             <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
                 {isAdmin && (
-                    <button className="btn" style={{ background: 'var(--border)' }} onClick={handleSetGlobalPremium}>
+                    <button className="btn" style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.8)', color: 'var(--text-primary)', boxShadow: 'var(--shadow-sm)' }} onClick={handleSetGlobalPremium}>
                         <Settings size={16} /> Global Standard Premium: ₹{globalPremium}/mo
                     </button>
                 )}
                 {!isAdmin && (
-                    <span style={{ padding: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                        <Settings size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+                    <span style={{ padding: '0.6rem 1rem', fontSize: '0.875rem', color: 'var(--text-primary)', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.8)', borderRadius: '8px', fontWeight: 600, boxShadow: 'var(--shadow-sm)' }}>
+                        <Settings size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
                         Global Premium: ₹{globalPremium}/mo
                     </span>
                 )}
