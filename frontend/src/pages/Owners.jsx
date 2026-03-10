@@ -113,15 +113,13 @@ const Owners = ({ isAdmin }) => {
             </div>
 
             <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
-                {isAdmin && (
-                    <button className="btn" style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.8)', color: 'var(--text-primary)', boxShadow: 'var(--shadow-sm)' }} onClick={handleSetGlobalPremium}>
+                {isAdmin ? (
+                    <button className="btn" style={{ background: 'var(--text-primary)', color: 'white', borderRadius: '20px', padding: '0.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: 'var(--shadow-md)', border: 'none' }} onClick={handleSetGlobalPremium}>
                         <Settings size={16} /> Global Standard Premium: ₹{globalPremium}/mo
                     </button>
-                )}
-                {!isAdmin && (
-                    <span style={{ padding: '0.6rem 1rem', fontSize: '0.875rem', color: 'var(--text-primary)', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.8)', borderRadius: '8px', fontWeight: 600, boxShadow: 'var(--shadow-sm)' }}>
-                        <Settings size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
-                        Global Premium: ₹{globalPremium}/mo
+                ) : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--text-primary)', color: 'white', padding: '0.5rem 1.25rem', borderRadius: '20px', fontSize: '0.875rem', fontWeight: 600, boxShadow: 'var(--shadow-md)' }}>
+                        <Settings size={16} /> Global Premium: ₹{globalPremium}/mo
                     </span>
                 )}
             </div>
