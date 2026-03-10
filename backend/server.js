@@ -25,10 +25,49 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded bills
 
-// Database Connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+// Global is used here to maintain a cached connection across hot reloads in development
+// and across serverless function invocations in production
+let cachedDb = global.mongoose;
+
+if (!cachedDb) {
+  cachedDb = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectToDatabase() {
+  if (cachedDb.conn) {
+    return cachedDb.conn;
+  }
+
+  if (!cachedDb.promise) {
+    const opts = {
+      bufferCommands: false, // Disable Mongoose buffering
+    };
+    cachedDb.promise = mongoose.connect(process.env.MONGODB_URI, opts).then((mongoose) => {
+      console.log('Connected to MongoDB');
+      return mongoose;
+    });
+  }
+
+  try {
+    cachedDb.conn = await cachedDb.promise;
+  } catch (e) {
+    cachedDb.promise = null;
+    throw e;
+  }
+
+  return cachedDb.conn;
+}
+
+// Ensure DB is connected before processing API requests (crucial for Serverless Vercel)
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (error) {
+    console.error('Failed to connect to database in middleware:', error);
+    res.status(500).json({ message: 'Database connection failed' });
+  }
+});
 
 // Routes
 app.use('/api/owners', ownerRoutes);
