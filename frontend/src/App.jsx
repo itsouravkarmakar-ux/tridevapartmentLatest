@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Home, Users, Receipt, AlertCircle, LogIn, LogOut, KeyRound } from 'lucide-react';
+import { Home, Users, Receipt, AlertCircle, LogIn, LogOut, KeyRound, ClipboardList } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import Owners from './pages/Owners';
 import Expenses from './pages/Expenses';
 import Defaulters from './pages/Defaulters';
+import ActionItems from './pages/ActionItems';
 import Login from './components/Login';
 import ChangePassword from './components/ChangePassword';
 
@@ -20,7 +21,7 @@ const Sidebar = ({ isAdmin, showLogin, handleLogout, showChangePassword }) => {
       <h1 style={{ color: 'var(--text-primary)', marginBottom: '2rem', fontSize: '1.5rem', fontWeight: 800 }}>
         Tridev Apartment
       </h1>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div className="nav-links">
         <Link to="/" className={`nav-link ${isActive('/')}`}>
           <Home size={20} /> Dashboard
         </Link>
@@ -33,9 +34,12 @@ const Sidebar = ({ isAdmin, showLogin, handleLogout, showChangePassword }) => {
         <Link to="/defaulters" className={`nav-link ${isActive('/defaulters')}`}>
           <AlertCircle size={20} /> Defaulters List
         </Link>
+        <Link to="/actions" className={`nav-link ${isActive('/actions')}`}>
+          <ClipboardList size={20} /> Action Items
+        </Link>
       </div>
 
-      <div style={{ marginTop: 'auto', paddingTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div className="nav-actions" style={{ marginTop: 'auto', paddingTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {isAdmin ? (
           <>
             <button className="nav-link" onClick={showChangePassword} style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', color: 'var(--text-secondary)' }}>
@@ -76,14 +80,15 @@ const App = () => {
       {showLogin && <Login onLoginSuccess={() => { setIsAdmin(true); setShowLogin(false); }} onClose={() => setShowLogin(false)} />}
       {showPwdUi && <ChangePassword onClose={() => setShowPwdUi(false)} />}
 
-      <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-gradient)' }}>
+      <div className="app-container">
         <Sidebar isAdmin={isAdmin} showLogin={() => setShowLogin(true)} handleLogout={handleLogout} showChangePassword={() => setShowPwdUi(true)} />
-        <main style={{ padding: '2rem', flex: 1, marginLeft: '250px' }}>
+        <main className="main-content">
           <Routes>
             <Route path="/" element={<Dashboard isAdmin={isAdmin} />} />
             <Route path="/owners" element={<Owners isAdmin={isAdmin} />} />
             <Route path="/expenses" element={<Expenses isAdmin={isAdmin} />} />
             <Route path="/defaulters" element={<Defaulters isAdmin={isAdmin} />} />
+            <Route path="/actions" element={<ActionItems isAdmin={isAdmin} />} />
           </Routes>
         </main>
       </div>

@@ -10,7 +10,7 @@ router.get('/:key', async (req, res) => {
         const setting = await Settings.findOne({ key: req.params.key });
         if (!setting) {
             if (req.params.key === 'initialBalance') {
-                return res.json({ key: 'initialBalance', value: 50557 }); // Default
+                return res.json({ key: 'initialBalance', value: 0 }); // Default
             }
             return res.status(404).json({ message: 'Setting not found' });
         }

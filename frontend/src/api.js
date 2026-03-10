@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://backend-pi-seven-39.vercel.app/api';
 
 // Intercept requests and add authorization header
 axios.interceptors.request.use((config) => {
@@ -72,5 +72,21 @@ export const addExpense = async (formData) => {
     const res = await axios.post(`${API_URL}/expenses`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
     });
+    return res.data;
+};
+
+// Action Items APIs
+export const getActionItems = async () => {
+    const res = await axios.get(`${API_URL}/actions`);
+    return res.data;
+};
+
+export const addActionItem = async (title) => {
+    const res = await axios.post(`${API_URL}/actions`, { title });
+    return res.data;
+};
+
+export const updateActionItem = async (id, updates) => {
+    const res = await axios.put(`${API_URL}/actions/${id}`, updates);
     return res.data;
 };

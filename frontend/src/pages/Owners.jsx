@@ -92,12 +92,12 @@ const Owners = ({ isAdmin }) => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div className="page-header">
                 <div>
                     <h2>Flat Tracking & Dues</h2>
                     <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Showing data strictly constrained by month selection.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div className="page-header-actions">
                     <label style={{ fontWeight: 500 }}>Select Month: </label>
                     <input
                         type="month"

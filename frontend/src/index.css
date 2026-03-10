@@ -39,6 +39,8 @@ body {
 .app-container {
   display: flex;
   width: 100%;
+  min-height: 100vh;
+  background: var(--bg-gradient);
 }
 
 .sidebar {
@@ -75,7 +77,8 @@ body {
   transition: all 0.2s ease;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
   background: var(--primary);
   color: white;
   transform: translateX(4px);
@@ -108,8 +111,13 @@ h2 {
   gap: 1.5rem;
 }
 
-.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
 
 /* Forms & Buttons */
 .btn {
@@ -128,6 +136,7 @@ h2 {
   background: var(--primary);
   color: white;
 }
+
 .btn-primary:hover {
   background: var(--primary-hover);
 }
@@ -135,12 +144,14 @@ h2 {
 .form-group {
   margin-bottom: 1rem;
 }
+
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
   font-size: 0.875rem;
 }
+
 .form-control {
   width: 100%;
   padding: 0.75rem;
@@ -149,7 +160,92 @@ h2 {
   font-family: inherit;
   box-sizing: border-box;
 }
+
 .form-control:focus {
   outline: 2px solid var(--primary);
   border-color: transparent;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 1rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    gap: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .sidebar h1 {
+    width: 100%;
+    text-align: center;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .nav-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .nav-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0 !important;
+    padding-top: 0.5rem !important;
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .main-content {
+    padding: 1rem;
+    margin-left: 0;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .grid-cols-3,
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
 }

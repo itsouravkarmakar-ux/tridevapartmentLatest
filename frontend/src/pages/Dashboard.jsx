@@ -4,7 +4,7 @@ import { ArrowUpRight, ArrowDownRight, Wallet, Edit2 } from 'lucide-react';
 
 const Dashboard = ({ isAdmin }) => {
     const [summary, setSummary] = useState({
-        initialBalance: 50557,
+        initialBalance: 0,
         totalReceived: 0,
         totalExpenses: 0,
         remainingBalance: 0,
@@ -33,7 +33,7 @@ const Dashboard = ({ isAdmin }) => {
     };
 
     useEffect(() => {
-        if (month !== '') fetchSummary();
+        fetchSummary();
     }, [month]);
 
     const handleEditBalance = async () => {
@@ -50,9 +50,9 @@ const Dashboard = ({ isAdmin }) => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div className="page-header">
                 <h2>Dashboard</h2>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div className="page-header-actions">
                     <label style={{ fontWeight: 500 }}>Filter: </label>
                     <input
                         type="month"

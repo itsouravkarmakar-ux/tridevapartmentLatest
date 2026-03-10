@@ -35,21 +35,18 @@ router.get('/', async (req, res) => {
 
         // Fetch initial balance setting
         const setting = await Settings.findOne({ key: 'initialBalance' });
-        const initialBalance = setting ? setting.value : 50557;
+        const initialBalance = setting ? setting.value : 0;
 
         // Overall Remaining Balance = Initial + Total Received - Total Expenses
-        let remainingBalance = totalReceived - totalExpenses;
-        if (!month) {
-            remainingBalance += initialBalance;
-        }
+        let remainingBalance = initialBalance + totalReceived - totalExpenses;
 
         // If month specific, we might still want the overall lifetime balance
         let lifetimeBalance = 0;
         if (month) {
-            const allPayments = await Payment.aggregate([{ $group: { _id: null, total: { $sum: '$amount' } } }]);
             const allExpenses = await Expense.aggregate([{ $group: { _id: null, total: { $sum: '$amount' } } }]);
-            const allP = allPayments.length > 0 ? allPayments[0].total : 0;
             const allE = allExpenses.length > 0 ? allExpenses[0].total : 0;
+            const allPayments = await Payment.aggregate([{ $group: { _id: null, total: { $sum: '$amount' } } }]);
+            const allP = allPayments.length > 0 ? allPayments[0].total : 0;
             lifetimeBalance = initialBalance + allP - allE;
         } else {
             lifetimeBalance = remainingBalance;

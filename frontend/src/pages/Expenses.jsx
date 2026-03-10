@@ -70,9 +70,9 @@ const Expenses = ({ isAdmin }) => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div className="page-header">
                 <h2>Expenses & Bills</h2>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div className="page-header-actions">
                     <label style={{ fontWeight: 500 }}>Filter: </label>
                     <input
                         type="month"
