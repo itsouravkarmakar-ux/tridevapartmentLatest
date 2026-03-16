@@ -222,7 +222,7 @@ const Expenses = ({ isAdmin }) => {
                     {loading ? <p>Loading...</p> : expenses.length === 0 ? <p>No expenses logged for this month.</p> : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {expenses.map(exp => (
-                                <div key={exp._id} style={{ padding: '1rem', background: 'rgba(255,255,255,0.4)', borderRadius: '8px', borderLeft: '4px solid var(--danger)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                                <div key={exp._id} style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.7)', borderRadius: '12px', borderLeft: '4px solid var(--danger)', display: 'flex', flexDirection: 'column', gap: '0.75rem', boxShadow: 'var(--shadow-sm)' }}>
                                     {editingExpenseId === exp._id ? (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
                                             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -244,39 +244,48 @@ const Expenses = ({ isAdmin }) => {
                                                 <input type="file" multiple className="form-control" style={{ padding: '0.25rem', width: 'auto' }} onChange={e => setEditBillFiles(e.target.files)} accept="image/*,.pdf" />
                                             </div>
                                             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                                <button onClick={() => setEditingExpenseId(null)} className="btn" style={{ padding: '0.25rem 0.5rem' }}><X size={14} /> Cancel</button>
-                                                <button onClick={() => handleSaveEdit(exp._id)} className="btn btn-primary" style={{ padding: '0.25rem 0.5rem' }}><Check size={14} /> Save Changes</button>
+                                                <button onClick={() => setEditingExpenseId(null)} className="btn" style={{ padding: '0.4rem 0.75rem' }}><X size={14} /> Cancel</button>
+                                                <button onClick={() => handleSaveEdit(exp._id)} className="btn btn-primary" style={{ padding: '0.4rem 0.75rem' }}><Check size={14} /> Save</button>
                                             </div>
                                         </div>
                                     ) : (
                                         <>
-                                            <div>
-                                                <h4 style={{ margin: '0 0 0.5rem 0', fontWeight: 600 }}>{exp.category}</h4>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                    <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                                        {new Date(exp.expenseDate).toLocaleDateString()} &middot; {exp.month}
-                                                    </p>
-                                                    {isAdmin && (
-                                                        <div style={{ display: 'flex', gap: '0.25rem' }}>
-                                                            <button title="Edit" onClick={() => handleEditClick(exp)} className="btn" style={{ padding: '0.2rem', border: 'none', background: 'transparent' }}>
-                                                                <Edit2 size={14} color="gray" />
-                                                            </button>
-                                                            <button title="Delete" onClick={() => handleDeleteClick(exp._id)} className="btn" style={{ padding: '0.2rem', border: 'none', background: 'transparent' }}>
-                                                                <Trash2 size={14} color="var(--danger)" />
-                                                            </button>
-                                                        </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+                                                <div>
+                                                    <h4 style={{ margin: '0 0 0.25rem 0', fontWeight: 600, fontSize: '1.1rem' }}>{exp.category}</h4>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                                            {new Date(exp.expenseDate).toLocaleDateString()} &middot; {exp.month}
+                                                        </p>
+                                                        {isAdmin && (
+                                                            <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                                                <button title="Edit" onClick={() => handleEditClick(exp)} className="btn" style={{ padding: '0.2rem', border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                                                                    <Edit2 size={14} color="gray" />
+                                                                </button>
+                                                                <button title="Delete" onClick={() => handleDeleteClick(exp._id)} className="btn" style={{ padding: '0.2rem', border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                                                                    <Trash2 size={14} color="var(--danger)" />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--danger)' }}>₹{exp.amount}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            {(exp.description || exp.billCount > 0) && (
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '1rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                                                    <div style={{ flex: '1 1 200px' }}>
+                                                        {exp.description && <p style={{ margin: 0, fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--text-secondary)' }}>{exp.description}</p>}
+                                                    </div>
+                                                    {exp.billCount > 0 && (
+                                                        <button onClick={() => handleDownloadBills(exp._id, exp.category, exp.expenseDate)} className="btn" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', background: 'white', border: '1px solid var(--border)', borderRadius: '8px', marginLeft: 'auto' }}>
+                                                            <Download size={14} /> View Bills ({exp.billCount})
+                                                        </button>
                                                     )}
                                                 </div>
-                                                {exp.description && <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.875rem', fontStyle: 'italic' }}>{exp.description}</p>}
-                                            </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-                                                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--danger)' }}>₹{exp.amount}</span>
-                                                {exp.billCount > 0 && (
-                                                    <button onClick={() => handleDownloadBills(exp._id, exp.category, exp.expenseDate)} className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'white', border: '1px solid var(--border)' }}>
-                                                        <Download size={14} /> View/Download Bills ({exp.billCount})
-                                                    </button>
-                                                )}
-                                            </div>
+                                            )}
                                         </>
                                     )}
                                 </div>
