@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { getExpenses, addExpense, updateExpense, getExpenseBills } from '../api';
-import { Plus, Download, Edit2, Check, X } from 'lucide-react';
+import { getExpenses, addExpense, updateExpense, getExpenseBills, deleteExpense } from '../api';
+import { Plus, Download, Edit2, Check, X, Trash2 } from 'lucide-react';
+import { compressImage } from '../utils/imageCompression';
 
 const Expenses = ({ isAdmin }) => {
     const [expenses, setExpenses] = useState([]);
@@ -64,16 +65,32 @@ const Expenses = ({ isAdmin }) => {
             formData.append('month', editForm.month);
             formData.append('description', editForm.description);
             formData.append('expenseDate', editForm.expenseDate);
+
             if (editBillFiles && editBillFiles.length > 0) {
-                Array.from(editBillFiles).forEach(file => {
-                    formData.append('billImages', file);
-                });
+                const filesArray = Array.from(editBillFiles);
+                for (let i = 0; i < filesArray.length; i++) {
+                    const compressedFile = await compressImage(filesArray[i]);
+                    formData.append('billImages', compressedFile);
+                }
             }
             await updateExpense(expId, formData);
             setEditingExpenseId(null);
             fetchExpenses();
         } catch (error) {
             alert('Failed to update expense');
+        }
+    };
+
+    const handleDeleteClick = async (expId) => {
+        if (window.confirm('Are you sure you want to delete this expense? This action cannot be undone.')) {
+            try {
+                await deleteExpense(expId);
+                fetchExpenses();
+                alert('Expense deleted successfully.');
+            } catch (error) {
+                console.error('Failed to delete expense', error);
+                alert('Failed to delete expense.');
+            }
         }
     };
 
@@ -113,10 +130,13 @@ const Expenses = ({ isAdmin }) => {
         formData.append('month', expenseMonth);
         formData.append('description', description);
         formData.append('expenseDate', expenseDate);
+
         if (billFiles && billFiles.length > 0) {
-            Array.from(billFiles).forEach(file => {
-                formData.append('billImages', file);
-            });
+            const filesArray = Array.from(billFiles);
+            for (let i = 0; i < filesArray.length; i++) {
+                const compressedFile = await compressImage(filesArray[i]);
+                formData.append('billImages', compressedFile);
+            }
         }
 
         try {
@@ -237,9 +257,14 @@ const Expenses = ({ isAdmin }) => {
                                                         {new Date(exp.expenseDate).toLocaleDateString()} &middot; {exp.month}
                                                     </p>
                                                     {isAdmin && (
-                                                        <button title="Edit Date" onClick={() => handleEditClick(exp)} className="btn" style={{ padding: '0.2rem', border: 'none', background: 'transparent' }}>
-                                                            <Edit2 size={14} color="gray" />
-                                                        </button>
+                                                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                                            <button title="Edit" onClick={() => handleEditClick(exp)} className="btn" style={{ padding: '0.2rem', border: 'none', background: 'transparent' }}>
+                                                                <Edit2 size={14} color="gray" />
+                                                            </button>
+                                                            <button title="Delete" onClick={() => handleDeleteClick(exp._id)} className="btn" style={{ padding: '0.2rem', border: 'none', background: 'transparent' }}>
+                                                                <Trash2 size={14} color="var(--danger)" />
+                                                            </button>
+                                                        </div>
                                                     )}
                                                 </div>
                                                 {exp.description && <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.875rem', fontStyle: 'italic' }}>{exp.description}</p>}

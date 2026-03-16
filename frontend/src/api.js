@@ -83,6 +83,11 @@ export const getExpenseBills = async (id) => {
     return res.data;
 };
 
+export const deleteExpense = async (id) => {
+    const res = await axios.delete(`${API_URL}/expenses/${id}`);
+    return res.data;
+};
+
 // Action Items APIs
 export const getActionItems = async () => {
     const res = await axios.get(`${API_URL}/actions`);
