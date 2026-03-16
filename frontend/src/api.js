@@ -69,9 +69,17 @@ export const getExpenses = async (month) => {
 };
 
 export const addExpense = async (formData) => {
-    const res = await axios.post(`${API_URL}/expenses`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    const res = await axios.post(`${API_URL}/expenses`, formData);
+    return res.data;
+};
+
+export const updateExpense = async (id, data) => {
+    const res = await axios.put(`${API_URL}/expenses/${id}`, data);
+    return res.data;
+};
+
+export const getExpenseBill = async (id) => {
+    const res = await axios.get(`${API_URL}/expenses/${id}/bill`);
     return res.data;
 };
 

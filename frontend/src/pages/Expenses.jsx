@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { getExpenses, addExpense } from '../api';
-import { Plus, Download } from 'lucide-react';
+import { getExpenses, addExpense, updateExpense, getExpenseBill } from '../api';
+import { Plus, Download, Edit2, Check, X } from 'lucide-react';
 
 const Expenses = ({ isAdmin }) => {
     const [expenses, setExpenses] = useState([]);
@@ -13,6 +13,60 @@ const Expenses = ({ isAdmin }) => {
     const [expenseMonth, setExpenseMonth] = useState('');
     const [description, setDescription] = useState('');
     const [billFile, setBillFile] = useState(null);
+    const [expenseDate, setExpenseDate] = useState('');
+
+    const [editingExpenseId, setEditingExpenseId] = useState(null);
+    const [editForm, setEditForm] = useState({ category: '', amount: '', month: '', description: '', expenseDate: '' });
+    const [editBillFile, setEditBillFile] = useState(null);
+
+    const handleEditClick = (exp) => {
+        setEditingExpenseId(exp._id);
+        setEditForm({
+            category: exp.category,
+            amount: exp.amount,
+            month: exp.month,
+            description: exp.description || '',
+            expenseDate: exp.expenseDate ? new Date(exp.expenseDate).toISOString().split('T')[0] : ''
+        });
+        setEditBillFile(null);
+    };
+
+    const handleDownloadBill = async (expId, category, date) => {
+        try {
+            const data = await getExpenseBill(expId);
+            const billUrl = data.billUrl;
+            
+            // Create temporary link and trigger download
+            const link = document.createElement('a');
+            link.href = billUrl.startsWith('data:') ? billUrl : `http://localhost:5000${billUrl}`;
+            link.download = `bill-${category}-${date ? new Date(date).toLocaleDateString().replace(/\//g, '-') : 'date'}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error downloading bill:', error);
+            alert('Failed to download bill image');
+        }
+    };
+
+    const handleSaveEdit = async (expId) => {
+        try {
+            const formData = new FormData();
+            formData.append('category', editForm.category);
+            formData.append('amount', editForm.amount);
+            formData.append('month', editForm.month);
+            formData.append('description', editForm.description);
+            formData.append('expenseDate', editForm.expenseDate);
+            if (editBillFile) {
+                formData.append('billImage', editBillFile);
+            }
+            await updateExpense(expId, formData);
+            setEditingExpenseId(null);
+            fetchExpenses();
+        } catch (error) {
+            alert('Failed to update expense');
+        }
+    };
 
     const fileInputRef = useRef();
 
@@ -21,6 +75,7 @@ const Expenses = ({ isAdmin }) => {
         const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         setMonth(currentMonth);
         setExpenseMonth(currentMonth);
+        setExpenseDate(today.toISOString().split('T')[0]);
     }, []);
 
     const fetchExpenses = async () => {
@@ -48,6 +103,7 @@ const Expenses = ({ isAdmin }) => {
         formData.append('amount', amount);
         formData.append('month', expenseMonth);
         formData.append('description', description);
+        formData.append('expenseDate', expenseDate);
         if (billFile) {
             formData.append('billImage', billFile);
         }
@@ -110,6 +166,10 @@ const Expenses = ({ isAdmin }) => {
                                 <input type="month" required className="form-control" value={expenseMonth} onChange={e => setExpenseMonth(e.target.value)} />
                             </div>
                             <div className="form-group">
+                                <label>Date of Expense</label>
+                                <input type="date" required className="form-control" value={expenseDate} onChange={e => setExpenseDate(e.target.value)} />
+                            </div>
+                            <div className="form-group">
                                 <label>Description (Optional)</label>
                                 <textarea className="form-control" rows="2" value={description} onChange={e => setDescription(e.target.value)}></textarea>
                             </div>
@@ -131,22 +191,58 @@ const Expenses = ({ isAdmin }) => {
                     {loading ? <p>Loading...</p> : expenses.length === 0 ? <p>No expenses logged for this month.</p> : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {expenses.map(exp => (
-                                <div key={exp._id} style={{ padding: '1rem', background: 'rgba(255,255,255,0.4)', borderRadius: '8px', borderLeft: '4px solid var(--danger)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div>
-                                        <h4 style={{ margin: '0 0 0.5rem 0', fontWeight: 600 }}>{exp.category}</h4>
-                                        <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                            {new Date(exp.expenseDate).toLocaleDateString()} &middot; {exp.month}
-                                        </p>
-                                        {exp.description && <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.875rem', fontStyle: 'italic' }}>{exp.description}</p>}
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--danger)' }}>₹{exp.amount}</span>
-                                        {exp.billUrl && (
-                                            <a href={`http://localhost:5000${exp.billUrl}`} target="_blank" rel="noreferrer" className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'white', border: '1px solid var(--border)' }}>
-                                                <Download size={14} /> View Bill
-                                            </a>
-                                        )}
-                                    </div>
+                                <div key={exp._id} style={{ padding: '1rem', background: 'rgba(255,255,255,0.4)', borderRadius: '8px', borderLeft: '4px solid var(--danger)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                                    {editingExpenseId === exp._id ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
+                                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                <select className="form-control" style={{ padding: '0.25rem', width: 'auto' }} value={editForm.category} onChange={e => setEditForm({...editForm, category: e.target.value})}>
+                                                    <option value="Lift Maintenance">Lift Maintenance</option>
+                                                    <option value="Swipper Cost">Swipper Cost</option>
+                                                    <option value="Electricity">Electricity</option>
+                                                    <option value="Water">Water</option>
+                                                    <option value="Repairs">Repairs</option>
+                                                    <option value="Others">Others</option>
+                                                </select>
+                                                <input type="number" placeholder="Amount" className="form-control" style={{ padding: '0.25rem', width: 'min-content' }} value={editForm.amount} onChange={e => setEditForm({...editForm, amount: e.target.value})} />
+                                                <input type="month" className="form-control" style={{ padding: '0.25rem', width: 'auto' }} value={editForm.month} onChange={e => setEditForm({...editForm, month: e.target.value})} />
+                                                <input type="date" className="form-control" style={{ padding: '0.25rem', width: 'auto' }} value={editForm.expenseDate} onChange={e => setEditForm({...editForm, expenseDate: e.target.value})} />
+                                            </div>
+                                            <textarea placeholder="Description" className="form-control" rows="1" style={{ padding: '0.25rem' }} value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} />
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                <label style={{ fontSize: '0.875rem' }}>Update Bill:</label>
+                                                <input type="file" className="form-control" style={{ padding: '0.25rem', width: 'auto' }} onChange={e => setEditBillFile(e.target.files[0])} accept="image/*,.pdf" />
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                                <button onClick={() => setEditingExpenseId(null)} className="btn" style={{ padding: '0.25rem 0.5rem' }}><X size={14} /> Cancel</button>
+                                                <button onClick={() => handleSaveEdit(exp._id)} className="btn btn-primary" style={{ padding: '0.25rem 0.5rem' }}><Check size={14} /> Save Changes</button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div>
+                                                <h4 style={{ margin: '0 0 0.5rem 0', fontWeight: 600 }}>{exp.category}</h4>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                                        {new Date(exp.expenseDate).toLocaleDateString()} &middot; {exp.month}
+                                                    </p>
+                                                    {isAdmin && (
+                                                        <button title="Edit Date" onClick={() => handleEditClick(exp)} className="btn" style={{ padding: '0.2rem', border: 'none', background: 'transparent' }}>
+                                                            <Edit2 size={14} color="gray" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                {exp.description && <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.875rem', fontStyle: 'italic' }}>{exp.description}</p>}
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                                                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--danger)' }}>₹{exp.amount}</span>
+                                                {exp.hasBill && (
+                                                    <button onClick={() => handleDownloadBill(exp._id, exp.category, exp.expenseDate)} className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'white', border: '1px solid var(--border)' }}>
+                                                        <Download size={14} /> View/Download Bill
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             ))}
                         </div>
