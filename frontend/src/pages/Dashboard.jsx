@@ -125,7 +125,7 @@ const Dashboard = ({ isAdmin }) => {
                                 <p style={{ fontSize: '1.25rem', fontWeight: 600, margin: '0.25rem 0 0 0' }}>₹{summary.initialBalance}</p>
                             </div>
                             <div>
-                                <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.875rem' }}>Total Amount Added (Lifetime)</p>
+                                <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.875rem' }}>Total Amount Added (All Months)</p>
                                 <p style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--secondary)', margin: '0.25rem 0 0 0' }}>₹{summary.lifetimeReceived}</p>
                             </div>
                         </div>
