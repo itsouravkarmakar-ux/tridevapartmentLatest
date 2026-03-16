@@ -255,7 +255,7 @@ const Expenses = ({ isAdmin }) => {
                                                     <h4 style={{ margin: '0 0 0.25rem 0', fontWeight: 600, fontSize: '1.1rem' }}>{exp.category}</h4>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                                                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                                            {new Date(exp.expenseDate).toLocaleDateString()} &middot; {exp.month}
+                                                            {new Date(exp.expenseDate).toLocaleDateString()}
                                                         </p>
                                                         {isAdmin && (
                                                             <div style={{ display: 'flex', gap: '0.25rem' }}>
@@ -277,7 +277,7 @@ const Expenses = ({ isAdmin }) => {
                                             {(exp.description || exp.billCount > 0) && (
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '1rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
                                                     <div style={{ flex: '1 1 200px' }}>
-                                                        {exp.description && <p style={{ margin: 0, fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--text-secondary)' }}>{exp.description}</p>}
+                                                        {exp.description && <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-secondary)' }}>{exp.description}</p>}
                                                     </div>
                                                     {exp.billCount > 0 && (
                                                         <button onClick={() => handleDownloadBills(exp._id, exp.category, exp.expenseDate)} className="btn" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', background: 'white', border: '1px solid var(--border)', borderRadius: '8px', marginLeft: 'auto' }}>
