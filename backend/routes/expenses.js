@@ -26,13 +26,7 @@ router.get('/', async (req, res) => {
                     month: 1,
                     description: 1,
                     expenseDate: 1,
-                    hasBill: { 
-                        $cond: { 
-                            if: { $and: [ { $ne: ["$billUrl", null] }, { $ne: ["$billUrl", ""] } ] }, 
-                            then: true, 
-                            else: false 
-                        } 
-                    }
+                    billCount: { $size: { $ifNull: ["$bills", []] } }
                 }
             }
         ]);
@@ -42,21 +36,21 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get bill for a specific expense
-router.get('/:id/bill', async (req, res) => {
+// Get bills for a specific expense
+router.get('/:id/bills', async (req, res) => {
     try {
-        const expense = await Expense.findById(req.params.id).select('billUrl');
-        if (!expense || !expense.billUrl) {
-            return res.status(404).json({ message: 'Bill not found' });
+        const expense = await Expense.findById(req.params.id).select('bills');
+        if (!expense || !expense.bills) {
+            return res.status(404).json({ message: 'Bills not found' });
         }
-        res.json({ billUrl: expense.billUrl });
+        res.json({ bills: expense.bills });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
 // Create a new expense (Admin Only)
-router.post('/', authMiddleware, upload.single('billImage'), async (req, res) => {
+router.post('/', authMiddleware, upload.array('billImages'), async (req, res) => {
     const { category, amount, month, description, expenseDate } = req.body;
 
     if (!category || !amount || !month) {
@@ -70,9 +64,11 @@ router.post('/', authMiddleware, upload.single('billImage'), async (req, res) =>
             expenseData.expenseDate = new Date(expenseDate);
         }
 
-        if (req.file) {
-            const base64Data = req.file.buffer.toString('base64');
-            expenseData.billUrl = `data:${req.file.mimetype};base64,${base64Data}`;
+        if (req.files && req.files.length > 0) {
+            expenseData.bills = req.files.map(file => {
+                const base64Data = file.buffer.toString('base64');
+                return `data:${file.mimetype};base64,${base64Data}`;
+            });
         }
 
         const expense = new Expense(expenseData);
@@ -84,7 +80,7 @@ router.post('/', authMiddleware, upload.single('billImage'), async (req, res) =>
 });
 
 // Update an expense (Admin Only) - allows modifying all fields and uploading new bill
-router.put('/:id', authMiddleware, upload.single('billImage'), async (req, res) => {
+router.put('/:id', authMiddleware, upload.array('billImages'), async (req, res) => {
     try {
         const { category, amount, month, description, expenseDate } = req.body;
         const updateData = {};
@@ -96,9 +92,11 @@ router.put('/:id', authMiddleware, upload.single('billImage'), async (req, res) 
             updateData.expenseDate = new Date(expenseDate);
         }
 
-        if (req.file) {
-            const base64Data = req.file.buffer.toString('base64');
-            updateData.billUrl = `data:${req.file.mimetype};base64,${base64Data}`;
+        if (req.files && req.files.length > 0) {
+            updateData.bills = req.files.map(file => {
+                const base64Data = file.buffer.toString('base64');
+                return `data:${file.mimetype};base64,${base64Data}`;
+            });
         }
 
         const updatedExpense = await Expense.findByIdAndUpdate(

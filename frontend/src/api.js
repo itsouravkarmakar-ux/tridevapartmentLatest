@@ -78,8 +78,8 @@ export const updateExpense = async (id, data) => {
     return res.data;
 };
 
-export const getExpenseBill = async (id) => {
-    const res = await axios.get(`${API_URL}/expenses/${id}/bill`);
+export const getExpenseBills = async (id) => {
+    const res = await axios.get(`${API_URL}/expenses/${id}/bills`);
     return res.data;
 };
 

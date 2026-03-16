@@ -21,9 +21,9 @@ const expenseSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    billUrl: {
-        type: String // Optional path to uploaded bill image
-    }
+    bills: [{
+        type: String // Optional paths to uploaded bill images
+    }]
 }, { timestamps: true });
 
 export default mongoose.model('Expense', expenseSchema);

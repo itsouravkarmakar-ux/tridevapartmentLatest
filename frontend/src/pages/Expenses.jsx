@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getExpenses, addExpense, updateExpense, getExpenseBill } from '../api';
+import { getExpenses, addExpense, updateExpense, getExpenseBills } from '../api';
 import { Plus, Download, Edit2, Check, X } from 'lucide-react';
 
 const Expenses = ({ isAdmin }) => {
@@ -12,12 +12,12 @@ const Expenses = ({ isAdmin }) => {
     const [amount, setAmount] = useState('');
     const [expenseMonth, setExpenseMonth] = useState('');
     const [description, setDescription] = useState('');
-    const [billFile, setBillFile] = useState(null);
+    const [billFiles, setBillFiles] = useState([]);
     const [expenseDate, setExpenseDate] = useState('');
 
     const [editingExpenseId, setEditingExpenseId] = useState(null);
     const [editForm, setEditForm] = useState({ category: '', amount: '', month: '', description: '', expenseDate: '' });
-    const [editBillFile, setEditBillFile] = useState(null);
+    const [editBillFiles, setEditBillFiles] = useState([]);
 
     const handleEditClick = (exp) => {
         setEditingExpenseId(exp._id);
@@ -28,24 +28,31 @@ const Expenses = ({ isAdmin }) => {
             description: exp.description || '',
             expenseDate: exp.expenseDate ? new Date(exp.expenseDate).toISOString().split('T')[0] : ''
         });
-        setEditBillFile(null);
+        setEditBillFiles([]);
     };
 
-    const handleDownloadBill = async (expId, category, date) => {
+    const handleDownloadBills = async (expId, category, date) => {
         try {
-            const data = await getExpenseBill(expId);
-            const billUrl = data.billUrl;
-            
-            // Create temporary link and trigger download
-            const link = document.createElement('a');
-            link.href = billUrl.startsWith('data:') ? billUrl : `http://localhost:5000${billUrl}`;
-            link.download = `bill-${category}-${date ? new Date(date).toLocaleDateString().replace(/\//g, '-') : 'date'}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const data = await getExpenseBills(expId);
+            const bills = data.bills || [];
+            if (bills.length === 0) {
+                alert('No bills attached to this expense.');
+                return;
+            }
+
+            // Loop through bills and trigger download for each
+            bills.forEach((billUrl, index) => {
+                const link = document.createElement('a');
+                link.href = billUrl.startsWith('data:') ? billUrl : `http://localhost:5000${billUrl}`;
+                const safeDate = date ? new Date(date).toLocaleDateString().replace(/\//g, '-') : 'date';
+                link.download = `bill-${category}-${safeDate}-part${index + 1}`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         } catch (error) {
-            console.error('Error downloading bill:', error);
-            alert('Failed to download bill image');
+            console.error('Error downloading bills:', error);
+            alert('Failed to download bill images');
         }
     };
 
@@ -57,8 +64,10 @@ const Expenses = ({ isAdmin }) => {
             formData.append('month', editForm.month);
             formData.append('description', editForm.description);
             formData.append('expenseDate', editForm.expenseDate);
-            if (editBillFile) {
-                formData.append('billImage', editBillFile);
+            if (editBillFiles && editBillFiles.length > 0) {
+                Array.from(editBillFiles).forEach(file => {
+                    formData.append('billImages', file);
+                });
             }
             await updateExpense(expId, formData);
             setEditingExpenseId(null);
@@ -104,8 +113,10 @@ const Expenses = ({ isAdmin }) => {
         formData.append('month', expenseMonth);
         formData.append('description', description);
         formData.append('expenseDate', expenseDate);
-        if (billFile) {
-            formData.append('billImage', billFile);
+        if (billFiles && billFiles.length > 0) {
+            Array.from(billFiles).forEach(file => {
+                formData.append('billImages', file);
+            });
         }
 
         try {
@@ -113,7 +124,7 @@ const Expenses = ({ isAdmin }) => {
             // Reset form
             setAmount('');
             setDescription('');
-            setBillFile(null);
+            setBillFiles([]);
             if (fileInputRef.current) fileInputRef.current.value = '';
 
             // Refresh list
@@ -174,8 +185,8 @@ const Expenses = ({ isAdmin }) => {
                                 <textarea className="form-control" rows="2" value={description} onChange={e => setDescription(e.target.value)}></textarea>
                             </div>
                             <div className="form-group">
-                                <label>Upload Bill</label>
-                                <input type="file" className="form-control" ref={fileInputRef} onChange={e => setBillFile(e.target.files[0])} accept="image/*,.pdf" />
+                                <label>Upload Bills</label>
+                                <input type="file" multiple className="form-control" ref={fileInputRef} onChange={e => setBillFiles(e.target.files)} accept="image/*,.pdf" />
                             </div>
 
                             <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
@@ -209,8 +220,8 @@ const Expenses = ({ isAdmin }) => {
                                             </div>
                                             <textarea placeholder="Description" className="form-control" rows="1" style={{ padding: '0.25rem' }} value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} />
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                                <label style={{ fontSize: '0.875rem' }}>Update Bill:</label>
-                                                <input type="file" className="form-control" style={{ padding: '0.25rem', width: 'auto' }} onChange={e => setEditBillFile(e.target.files[0])} accept="image/*,.pdf" />
+                                                <label style={{ fontSize: '0.875rem' }}>Update Bills:</label>
+                                                <input type="file" multiple className="form-control" style={{ padding: '0.25rem', width: 'auto' }} onChange={e => setEditBillFiles(e.target.files)} accept="image/*,.pdf" />
                                             </div>
                                             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                                                 <button onClick={() => setEditingExpenseId(null)} className="btn" style={{ padding: '0.25rem 0.5rem' }}><X size={14} /> Cancel</button>
@@ -235,9 +246,9 @@ const Expenses = ({ isAdmin }) => {
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
                                                 <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--danger)' }}>₹{exp.amount}</span>
-                                                {exp.hasBill && (
-                                                    <button onClick={() => handleDownloadBill(exp._id, exp.category, exp.expenseDate)} className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'white', border: '1px solid var(--border)' }}>
-                                                        <Download size={14} /> View/Download Bill
+                                                {exp.billCount > 0 && (
+                                                    <button onClick={() => handleDownloadBills(exp._id, exp.category, exp.expenseDate)} className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'white', border: '1px solid var(--border)' }}>
+                                                        <Download size={14} /> View/Download Bills ({exp.billCount})
                                                     </button>
                                                 )}
                                             </div>
