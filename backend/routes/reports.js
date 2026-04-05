@@ -80,6 +80,15 @@ router.get('/', async (req, res) => {
             { $sort: { flatNumber: 1 } }
         ]);
 
+        // Explicitly sort transactions within each payment record by month then date
+        paymentData.forEach(p => {
+            p.transactions.sort((a, b) => {
+                const monthComp = a.month.localeCompare(b.month);
+                if (monthComp !== 0) return monthComp;
+                return new Date(a.date) - new Date(b.date);
+            });
+        });
+
         // 2. Month-wise Expense Totals
         const expenseData = await Expense.aggregate([
             {
@@ -103,9 +112,11 @@ router.get('/', async (req, res) => {
             { $sort: { _id: 1 } }
         ]);
 
+        res.setHeader('X-Report-Logic', 'month-wise-v1.1');
         res.json({
             payments: paymentData,
-            expenses: expenseData
+            expenses: expenseData,
+            lastDeploy: '2026-04-05T11:28'
         });
     } catch (error) {
         console.error('Report error:', error);

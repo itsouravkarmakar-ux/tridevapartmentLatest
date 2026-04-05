@@ -382,7 +382,20 @@ const Reports = () => {
                     h1 { font-size: 1.4rem !important; margin-bottom: 0.5rem !important; text-align: center; }
                     h2 { font-size: 1.1rem !important; margin-top: 1.2rem !important; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
                 }
+
+                .footer-version {
+                    margin-top: 3rem;
+                    padding-top: 1rem;
+                    border-top: 1px solid #e5e7eb;
+                    color: #94a3b8;
+                    font-size: 0.75rem;
+                    text-align: center;
+                }
             `}</style>
+            
+            <div className="footer-version no-print">
+                Logic: Month-wise (Reflected by Target Month) • Deployment: 2026-04-05 11:28
+            </div>
         </div>
     );
 };
