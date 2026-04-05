@@ -13,14 +13,10 @@ const Dashboard = ({ isAdmin }) => {
         monthlyBreakdown: []
     });
     const [loading, setLoading] = useState(true);
-    const [month, setMonth] = useState('');
-
-    // Set default month to current month
-    useEffect(() => {
+    const [month, setMonth] = useState(() => {
         const today = new Date();
-        const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-        setMonth(currentMonth);
-    }, []);
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    });
 
     const fetchSummary = async () => {
         try {
