@@ -394,7 +394,7 @@ const Reports = () => {
             `}</style>
             
             <div className="footer-version no-print">
-                Logic: Month-wise (v1.2) • Reflected by Target Month • Latest Sync: 2026-04-05 11:42
+                Logic: Month-wise (v1.3) • Reflected by Target Month • Latest Sync: 2026-04-05 12:35
             </div>
         </div>
     );

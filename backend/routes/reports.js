@@ -112,11 +112,11 @@ router.get('/', async (req, res) => {
             { $sort: { _id: 1 } }
         ]);
 
-        res.setHeader('X-Report-Logic', 'month-wise-v1.2');
+        res.setHeader('X-Report-Logic', 'month-wise-v1.3');
         res.json({
             payments: paymentData,
             expenses: expenseData,
-            lastDeploy: '2026-04-05T11:42'
+            lastDeploy: '2026-04-05T12:35'
         });
     } catch (error) {
         console.error('Report error:', error);
