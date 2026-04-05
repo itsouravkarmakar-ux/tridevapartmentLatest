@@ -35,4 +35,8 @@ const paymentSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+// Add indexes for performance
+paymentSchema.index({ month: 1 });
+paymentSchema.index({ owner: 1, month: 1 });
+
 export default mongoose.model('Payment', paymentSchema);

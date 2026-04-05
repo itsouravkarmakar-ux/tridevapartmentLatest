@@ -48,9 +48,15 @@ async function connectToDatabase() {
     }
     const opts = {
       bufferCommands: false, // Disable Mongoose buffering
+      maxPoolSize: 10,       // Reuse connections
+      serverSelectionTimeoutMS: 5000, // Faster failure if DB is down
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      family: 4 // Use IPv4, skip trying IPv6
     };
     cachedDb.promise = mongoose.connect(uri, opts).then((mongoose) => {
       console.log('Connected to MongoDB');
+      // Set some global mongoose settings for performance
+      mongoose.set('debug', false);
       return mongoose;
     });
   }

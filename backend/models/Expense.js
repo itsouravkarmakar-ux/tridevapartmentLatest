@@ -1,29 +1,28 @@
 import mongoose from 'mongoose';
 
 const expenseSchema = new mongoose.Schema({
-    category: {
-        type: String,
-        required: true,
-        enum: ['Lift Maintenance', 'Swipper Cost', 'Electricity', 'Water', 'Repairs', 'Others']
-    },
     amount: {
         type: Number,
         required: true
     },
-    month: {
+    category: {
         type: String,
-        required: true // Format: 'YYYY-MM'
+        required: true
+    },
+    month: {
+        type: String, // Format: 'YYYY-MM'
+        required: true
     },
     expenseDate: {
         type: Date,
         default: Date.now
     },
-    description: {
+    notes: {
         type: String
-    },
-    bills: [{
-        type: String // Optional paths to uploaded bill images
-    }]
+    }
 }, { timestamps: true });
+
+// Add index for reporting efficiency
+expenseSchema.index({ month: 1 });
 
 export default mongoose.model('Expense', expenseSchema);
