@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getReportData, getDefaulterReport } from '../api';
 import { Calendar, Download, FileText, ChevronDown, ChevronUp, Printer, CheckCircle2, XCircle, AlertCircle, ShieldCheck, Info, Maximize, Minimize, FileDown } from 'lucide-react';
 
@@ -39,6 +39,18 @@ const Reports = () => {
     useEffect(() => {
         fetchReport();
     }, []);
+
+    // Calculate Summary Totals
+    const summary = useMemo(() => {
+        if (!reportData) return { totalReceived: 0, totalExpenses: 0, balance: 0 };
+        const totalReceived = reportData.payments.reduce((sum, p) => sum + p.totalPaid, 0);
+        const totalExpenses = reportData.expenses.reduce((sum, e) => sum + e.totalExpense, 0);
+        return {
+            totalReceived,
+            totalExpenses,
+            balance: totalReceived - totalExpenses
+        };
+    }, [reportData]);
 
     const handlePrint = () => {
         window.print();
@@ -114,6 +126,38 @@ const Reports = () => {
                     </button>
                 </div>
             </div>
+
+            {reportData && (
+                <div className="summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+                    <div className="card summary-card" style={{ padding: '1.5rem', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ padding: '0.75rem', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', borderRadius: '10px' }}>
+                            <CheckCircle2 size={24} />
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Total Received</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a' }}>₹{summary.totalReceived.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div className="card summary-card" style={{ padding: '1.5rem', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ padding: '0.75rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '10px' }}>
+                            <XCircle size={24} />
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Total Expenses</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a' }}>₹{summary.totalExpenses.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div className="card summary-card" style={{ padding: '1.5rem', background: 'var(--primary)', color: 'white', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem', border: 'none' }}>
+                        <div style={{ padding: '0.75rem', background: 'rgba(255, 255, 255, 0.2)', color: 'white', borderRadius: '10px' }}>
+                            <ShieldCheck size={24} />
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600 }}>Overall Balance</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>₹{summary.balance.toLocaleString()}</div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {defaulterData && (
                 <section style={{ marginBottom: '2rem' }}>
@@ -383,6 +427,22 @@ const Reports = () => {
                     h2 { font-size: 1.1rem !important; margin-top: 1.2rem !important; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
                 }
 
+                @media (max-width: 768px) {
+                    .reports-page { padding: 1rem !important; }
+                    .summary-grid { grid-template-columns: 1fr !important; }
+                    .filter-section .card > div { flex-direction: column !important; align-items: stretch !important; }
+                    .filter-section button { width: 100% !important; margin-top: 1rem !important; }
+                    .report-table-container { border-radius: 8px !important; }
+                    .printable-table { font-size: 0.8rem !important; }
+                    .sticky-col { position: relative !important; left: 0 !important; z-index: 1 !important; border-right: none !important; }
+                    .owner-col { left: 0 !important; position: relative !important; width: auto !important; }
+                    h1 { font-size: 1.4rem !important; }
+                    h2 { font-size: 1.1rem !important; }
+                    .summary-card div:last-child div:last-child { font-size: 1.25rem !important; }
+                    .no-print { flex-direction: column !important; align-items: stretch !important; gap: 0.5rem !important; }
+                    .no-print h1 { margin-bottom: 0.5rem !important; }
+                }
+
                 .footer-version {
                     margin-top: 3rem;
                     padding-top: 1rem;
@@ -394,7 +454,7 @@ const Reports = () => {
             `}</style>
             
             <div className="footer-version no-print">
-                Logic: Month-wise (v1.3) • Reflected by Target Month • Latest Sync: 2026-04-05 12:35
+                Logic: Month-wise (v1.5) • Summary & Balance Added • Latest Sync: 2026-04-05 14:15
             </div>
         </div>
     );
