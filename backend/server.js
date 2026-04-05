@@ -41,10 +41,15 @@ async function connectToDatabase() {
   }
 
   if (!cachedDb.promise) {
+    const uri = process.env.MONGODB_URI;
+    if (!uri) {
+      console.error('CRITICAL: MONGODB_URI environment variable is not defined!');
+      throw new Error('MONGODB_URI is not defined in environment variables');
+    }
     const opts = {
       bufferCommands: false, // Disable Mongoose buffering
     };
-    cachedDb.promise = mongoose.connect(process.env.MONGODB_URI, opts).then((mongoose) => {
+    cachedDb.promise = mongoose.connect(uri, opts).then((mongoose) => {
       console.log('Connected to MongoDB');
       return mongoose;
     });
