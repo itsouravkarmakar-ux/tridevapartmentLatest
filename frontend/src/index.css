@@ -127,6 +127,16 @@ body {
   padding: 3rem 4rem;
   overflow-y: auto;
   animation: fadeIn 0.5s ease-out forwards;
+  transition: all 0.3s ease;
+}
+
+body.hide-sidebar-all .sidebar {
+  display: none !important;
+}
+
+body.hide-sidebar-all .main-content {
+  padding: 2rem !important;
+  margin: 0 !important;
 }
 
 /* Typography & Utilities */

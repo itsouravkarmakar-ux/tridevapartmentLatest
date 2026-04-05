@@ -25,15 +25,29 @@ router.get('/', async (req, res) => {
             // Find actual payments for this month
             const payments = await Payment.aggregate([
                 { $match: { month } },
-                { $group: { _id: '$owner', totalPaid: { $sum: '$amount' } } }
+                { $group: { 
+                    _id: '$owner', 
+                    totalPaid: { $sum: '$amount' },
+                    hasAdjustment: { $max: { $cond: ['$isAdjustment', true, false] } },
+                    adjustmentNotes: { $max: { $cond: ['$isAdjustment', '$notes', null] } }
+                } }
             ]);
-            const paymentMap = payments.reduce((acc, p) => ({ ...acc, [p._id.toString()]: p.totalPaid }), {});
+            
+            const paymentMap = payments.reduce((acc, p) => ({ 
+                ...acc, 
+                [p._id.toString()]: { 
+                    totalPaid: p.totalPaid, 
+                    hasAdjustment: p.hasAdjustment,
+                    adjustmentNotes: p.adjustmentNotes
+                } 
+            }), {});
 
             owners = owners.map(o => {
                 const id = o._id.toString();
                 // Use explicit premium if set, otherwise fallback to global standard premium
                 const expected = premiumMap[id] !== undefined ? premiumMap[id] : globalPremium;
-                const paid = paymentMap[id] || 0;
+                const paidData = paymentMap[id] || { totalPaid: 0, hasAdjustment: false, adjustmentNotes: null };
+                const paid = paidData.totalPaid;
                 const due = expected - paid;
 
                 return {
@@ -41,6 +55,8 @@ router.get('/', async (req, res) => {
                     expectedPremium: expected,
                     isExplicitPremium: premiumMap[id] !== undefined,
                     paidAmount: paid,
+                    hasAdjustment: paidData.hasAdjustment,
+                    adjustmentNotes: paidData.adjustmentNotes,
                     currentDueForMonth: due,
                     isDefaulter: due > 0, // Paid less than expected
                     isPaid: due <= 0 && expected > 0

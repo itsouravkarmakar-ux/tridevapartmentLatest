@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://backend-pi-seven-39.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+console.log('[DEBUG] API_URL configured to:', API_URL);
 
 // Intercept requests and add authorization header
 axios.interceptors.request.use((config) => {
@@ -63,6 +64,16 @@ export const addPayment = async (data) => {
     return res.data;
 };
 
+export const adjustPremium = async (formData) => {
+    const res = await axios.post(`${API_URL}/payments/adjust`, formData);
+    return res.data;
+};
+
+export const getAdjustmentBill = async (ownerId, month) => {
+    const res = await axios.get(`${API_URL}/payments/adjustment/${ownerId}/${month}`);
+    return res.data;
+};
+
 export const getExpenses = async (month) => {
     const res = await axios.get(`${API_URL}/expenses`, { params: { month } });
     return res.data;
@@ -103,3 +114,14 @@ export const updateActionItem = async (id, updates) => {
     const res = await axios.put(`${API_URL}/actions/${id}`, updates);
     return res.data;
 };
+
+export const getReportData = async (startDate, endDate) => {
+    const res = await axios.get(`${API_URL}/reports`, { params: { startDate, endDate } });
+    return res.data;
+};
+
+export const getDefaulterReport = async (startDate, endDate) => {
+    const res = await axios.get(`${API_URL}/reports/defaulters`, { params: { startDate, endDate } });
+    return res.data;
+};
+

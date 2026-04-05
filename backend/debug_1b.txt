@@ -1,0 +1,58 @@
+[dotenv@17.3.1] injecting env (2) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+Owner 1B: {
+  "_id": "69aea32a7c8721828938aab5",
+  "flatNumber": "1B",
+  "ownerName": "Gopal Karmakar",
+  "currentDue": -3000,
+  "__v": 0,
+  "createdAt": "2026-03-09T10:38:34.482Z",
+  "updatedAt": "2026-04-02T06:16:44.710Z",
+  "phone": "8240786534"
+}
+Payments for 1B: [
+  {
+    "_id": "69b0092eb30a6760d125a072",
+    "owner": "69aea32a7c8721828938aab5",
+    "amount": 600,
+    "month": "2025-12",
+    "paymentMethod": "Cash",
+    "transactionDate": "2026-03-10T12:06:06.129Z",
+    "createdAt": "2026-03-10T12:06:06.133Z",
+    "updatedAt": "2026-03-10T12:06:06.133Z",
+    "__v": 0
+  },
+  {
+    "_id": "69b0094ab30a6760d125a080",
+    "owner": "69aea32a7c8721828938aab5",
+    "amount": 600,
+    "month": "2026-01",
+    "paymentMethod": "Cash",
+    "transactionDate": "2026-03-10T12:06:34.865Z",
+    "createdAt": "2026-03-10T12:06:34.865Z",
+    "updatedAt": "2026-03-10T12:06:34.865Z",
+    "__v": 0
+  },
+  {
+    "_id": "69b0095db30a6760d125a08e",
+    "owner": "69aea32a7c8721828938aab5",
+    "amount": 600,
+    "month": "2026-02",
+    "paymentMethod": "Cash",
+    "transactionDate": "2026-03-10T12:06:53.443Z",
+    "createdAt": "2026-03-10T12:06:53.443Z",
+    "updatedAt": "2026-03-10T12:06:53.443Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ce09cce8d968494e4fcdb9",
+    "owner": "69aea32a7c8721828938aab5",
+    "amount": 600,
+    "month": "2026-03",
+    "paymentMethod": "Cash",
+    "isAdjustment": false,
+    "transactionDate": "2026-04-02T06:16:44.262Z",
+    "createdAt": "2026-04-02T06:16:44.265Z",
+    "updatedAt": "2026-04-02T06:16:44.265Z",
+    "__v": 0
+  }
+]

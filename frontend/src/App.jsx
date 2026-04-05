@@ -1,11 +1,12 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Home, Users, Receipt, AlertCircle, LogIn, LogOut, KeyRound, ClipboardList } from 'lucide-react';
+import { Home, Users, Receipt, AlertCircle, LogIn, LogOut, KeyRound, ClipboardList, BarChart3 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import Owners from './pages/Owners';
 import Expenses from './pages/Expenses';
 import Defaulters from './pages/Defaulters';
 import ActionItems from './pages/ActionItems';
+import Reports from './pages/Reports';
 import Login from './components/Login';
 import ChangePassword from './components/ChangePassword';
 
@@ -36,6 +37,9 @@ const Sidebar = ({ isAdmin, showLogin, handleLogout, showChangePassword }) => {
         </Link>
         <Link to="/actions" className={`nav-link ${isActive('/actions')}`}>
           <ClipboardList size={20} /> Action Items
+        </Link>
+        <Link to="/reports" className={`nav-link ${isActive('/reports')}`}>
+          <BarChart3 size={20} /> Reports
         </Link>
       </div>
 
@@ -90,6 +94,7 @@ const App = () => {
               <Route path="/expenses" element={<Expenses isAdmin={isAdmin} />} />
               <Route path="/defaulters" element={<Defaulters isAdmin={isAdmin} />} />
               <Route path="/actions" element={<ActionItems isAdmin={isAdmin} />} />
+              <Route path="/reports" element={<Reports />} />
             </Routes>
           </div>
           <footer style={{

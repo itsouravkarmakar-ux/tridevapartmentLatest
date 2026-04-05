@@ -20,8 +20,15 @@ const paymentSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['Cash', 'UPI', 'Bank Transfer'],
+        enum: ['Cash', 'UPI', 'Bank Transfer', 'Adjustment'],
         default: 'UPI'
+    },
+    isAdjustment: {
+        type: Boolean,
+        default: false
+    },
+    adjustmentBill: {
+        type: String // To store base64 string of the uploaded bill
     },
     notes: {
         type: String
