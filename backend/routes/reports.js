@@ -112,6 +112,9 @@ router.get('/', async (req, res) => {
                     }
                 }
             },
+            { $sort: { _id: 1 } }
+        ]);
+
         // 3. Lifetime Totals (Added for Overall Balance consistency)
         const [allPaymentsResult, allExpensesResult, setting] = await Promise.all([
             Payment.aggregate([{ $group: { _id: null, totalReceived: { $sum: '$amount' } } }]),
