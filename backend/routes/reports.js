@@ -112,14 +112,28 @@ router.get('/', async (req, res) => {
                     }
                 }
             },
-            { $sort: { _id: 1 } }
+        // 3. Lifetime Totals (Added for Overall Balance consistency)
+        const [allPaymentsResult, allExpensesResult, setting] = await Promise.all([
+            Payment.aggregate([{ $group: { _id: null, totalReceived: { $sum: '$amount' } } }]),
+            Expense.aggregate([{ $group: { _id: null, totalExpenses: { $sum: '$amount' } } }]),
+            Settings.findOne({ key: 'initialBalance' })
         ]);
 
-        res.setHeader('X-Report-Logic', 'month-wise-v1.3');
+        const initialBalance = setting ? setting.value : 0;
+        const totalReceivedAllTime = allPaymentsResult.length > 0 ? allPaymentsResult[0].totalReceived : 0;
+        const totalExpensesAllTime = allExpensesResult.length > 0 ? allExpensesResult[0].totalExpenses : 0;
+
+        res.setHeader('X-Report-Logic', 'month-wise-v1.6');
         res.json({
             payments: paymentData,
             expenses: expenseData,
-            lastDeploy: '2026-04-05T12:35'
+            lifetimeTotals: {
+                initialBalance,
+                totalReceived: totalReceivedAllTime,
+                totalExpenses: totalExpensesAllTime,
+                overallBalance: initialBalance + totalReceivedAllTime - totalExpensesAllTime
+            },
+            lastDeploy: '2026-04-05T14:38'
         });
     } catch (error) {
         console.error('Report error:', error);

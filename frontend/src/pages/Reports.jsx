@@ -152,8 +152,8 @@ const Reports = () => {
                             <ShieldCheck size={24} />
                         </div>
                         <div>
-                            <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600 }}>Overall Balance</div>
-                            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>₹{summary.balance.toLocaleString()}</div>
+                            <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600 }}>Overall Balance (All-Time)</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>₹{(reportData.lifetimeTotals?.overallBalance || 0).toLocaleString()}</div>
                         </div>
                     </div>
                 </div>
