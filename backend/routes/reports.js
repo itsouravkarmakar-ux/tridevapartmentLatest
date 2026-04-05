@@ -33,7 +33,6 @@ router.get('/', async (req, res) => {
             currentMonthIter.setMonth(currentMonthIter.getMonth() + 1);
             if (months.length > 60) break;
         }
-
         // 1. Flat-wise Payment Details
         const paymentData = await Payment.aggregate([
             {
@@ -82,11 +81,15 @@ router.get('/', async (req, res) => {
 
         // Explicitly sort transactions within each payment record by month then date
         paymentData.forEach(p => {
-            p.transactions.sort((a, b) => {
-                const monthComp = a.month.localeCompare(b.month);
-                if (monthComp !== 0) return monthComp;
-                return new Date(a.date) - new Date(b.date);
-            });
+            if (p.transactions && Array.isArray(p.transactions)) {
+                p.transactions.sort((a, b) => {
+                    const m1 = a.month || "";
+                    const m2 = b.month || "";
+                    const monthComp = m1.localeCompare(m2);
+                    if (monthComp !== 0) return monthComp;
+                    return new Date(a.date) - new Date(b.date);
+                });
+            }
         });
 
         // 2. Month-wise Expense Totals
